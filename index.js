@@ -7,15 +7,15 @@ const passport = require('passport');
 const session = require('express-session');
 const db = require('./queries');
 
-app.enable('trust proxy');
+//app.enable('trust proxy');
 
 app.use(
     session({
         secret: 'asdawac21',
         cookie: { 
             maxAge: 300000000,
-            sameSite: 'none',
-            secure: true
+            sameSite: true,
+            secure: false
         },
         resave: true,
         saveUninitialized: true
@@ -49,18 +49,20 @@ app.listen(port, () => {
 app.get('/users/:id', db.checkUserAuthorised, db.getUserById);
 app.post('/register', db.checkEmailExists, db.createUser);
 app.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureMessage: true}), 
-    (request, response) => {
-        console.log('Welcome back, ' + request.user.name);
-        response.setHeader('Access-Control-Allow-Credentials', 'true');
-        response.redirect(303, "../users/" + request.user.id);
+    (req, res) => {
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.redirect(303, "../users/" + req.user.id);
     }
 );
-app.get('/login', (request, response) => {
-    response.status(401).json({ message: 'login failed' });
+app.get('/login', (req, res) => {
+    res.status(401).json({ message: 'login failed' });
 });
-app.delete('/logout', (request, response, next) => {
-    request.logout((error) => {
+app.get('/logout', (req, res, next) => {
+    req.logout((error) => {
         if (error) return next(error);
-        response.status(200).json({message: 'logout successful'});
+        res.status(200).json({message: 'logout successful'});
     });
 });
+
+app.get('/users/:id/weight', db.checkUserAuthorised, db.getWeight);
+app.post('/users/:id/weight', db.checkUserAuthorised, db.addWeight);

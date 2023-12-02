@@ -13,8 +13,8 @@ const pool = new Pool({
 });
 
 const checkUserAuthorised = (req, res, next) => {
-    const id = parseInt(req.user.id);
-    if (req?.user?.id) next();
+    const id = parseInt(req.params.id);
+    if (parseInt(req?.user?.id) === id) next();
     else return res.status(401).json({error: 'You must be logged in as this user to access this resource'});
 };
 
@@ -73,7 +73,7 @@ const createUser = async (req, res) => {
 passport.use(new LocalStrategy({ usernameField: 'email' }, function verify(email, password, done) {
     pool.query('SELECT * FROM users WHERE email = $1', [email], async (error, user) => {
         if (error) return done(error);
-        if (user.rows < 1 ) {
+        if (!user.rows) {
             return done(new Error('User doesn\'t exist!'));
         }
 
@@ -94,15 +94,39 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function (id, done) {
-    pool.query('SELECT id, name, email FROM customers WHERE id = $1', [id], (error, results) => {
+    pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
         if (error) return done(error);
         return done(null, results.rows[0]);
     });
 });
 
+const getWeight = async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const weight = await pool.query('SELECT * FROM weights WHERE user_id = $1', [id]).rows;
+        return res.status(200).json(weight);
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const addWeight = async (req, res) => {
+    const id = parseInt(req.params.id);
+    const { weight, date } = req.body;
+
+    try {
+        const addedWeight = await pool.query('INSERT INTO weights (user_id, weight, date) VALUES ($1, $2, $3) RETURNING *', [id, weight, date]);
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 module.exports = {
     checkUserAuthorised,
     getUserById,
     checkEmailExists,
-    createUser
+    createUser,
+    getWeight,
+    addWeight
 };
