@@ -22,7 +22,7 @@ const getUserById = async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        const result = await pool.query('SELECT id, name, email FROM users WHERE id = $1', [id]);
         const user = await result.rows[0];
         return res.status(200).json({
             id: user.id,
@@ -104,8 +104,8 @@ const getWeight = async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const weight = await pool.query('SELECT * FROM weights WHERE user_id = $1', [id]).rows;
-        return res.status(200).json(weight);
+        const weight = await pool.query('SELECT * FROM weights WHERE user_id = $1', [id]);
+        return res.status(200).json({weightList: weight.rows});
     } catch (error) {
         return res.status(500).json({error});
     }
@@ -116,7 +116,8 @@ const addWeight = async (req, res) => {
     const { weight, date } = req.body;
 
     try {
-        const addedWeight = await pool.query('INSERT INTO weights (user_id, weight, date) VALUES ($1, $2, $3) RETURNING *', [id, weight, date]);
+        const addedWeight = await pool.query('INSERT INTO weights (user_id, weight, date) VALUES ($1, $2, $3) RETURNING weight, date', [id, weight, date]);
+        return res.status(201).json({weight: addedWeight.rows[0].weight, date: addedWeight.rows[0].date});
     } catch (error) {
         return res.status(500).json({error});
     }
