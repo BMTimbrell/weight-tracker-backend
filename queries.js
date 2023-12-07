@@ -104,7 +104,7 @@ const getWeight = async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const weight = await pool.query('SELECT * FROM weights WHERE user_id = $1', [id]);
+        const weight = await pool.query('SELECT * FROM weights WHERE user_id = $1 ORDER BY date', [id]);
         return res.status(200).json({weightList: weight.rows});
     } catch (error) {
         return res.status(500).json({error});
