@@ -123,11 +123,24 @@ const addWeight = async (req, res) => {
     }
 };
 
+const updateWeight = async (req, res) => {
+    const id = parseInt(req.params.dataId);
+    const { weight, date } = req.body;
+
+    try {
+        const updatedWeight = await pool.query('UPDATE weights SET weight = $1, date = $2 WHERE id = $3 RETURNING weight, date', [weight, date, id]);
+        return res.status(200).json({weight: updatedWeight.rows[0].weight, date: updatedWeight.rows[0].date});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 module.exports = {
     checkUserAuthorised,
     getUserById,
     checkEmailExists,
     createUser,
     getWeight,
-    addWeight
+    addWeight,
+    updateWeight
 };

@@ -66,3 +66,4 @@ app.get('/logout', (req, res, next) => {
 
 app.get('/users/:id/weight', db.checkUserAuthorised, db.getWeight);
 app.post('/users/:id/weight', db.checkUserAuthorised, db.addWeight);
+app.put('/users/:id/weight/:dataId', db.checkUserAuthorised, db.updateWeight);
