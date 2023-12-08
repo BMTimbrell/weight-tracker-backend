@@ -135,6 +135,17 @@ const updateWeight = async (req, res) => {
     }
 };
 
+const deleteWeight = async (req, res) => {
+    const id = parseInt(req.params.dataId);
+
+    try {
+        const updatedWeight = await pool.query('DELETE FROM weights WHERE id = $1', [id]);
+        return res.status(200).json({message: 'Deletion successful'});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 module.exports = {
     checkUserAuthorised,
     getUserById,
@@ -142,5 +153,6 @@ module.exports = {
     createUser,
     getWeight,
     addWeight,
-    updateWeight
+    updateWeight,
+    deleteWeight
 };
