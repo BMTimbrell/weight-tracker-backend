@@ -23,7 +23,7 @@ app.use(
 );
 
 app.use(cors({
-    origin: 'https://weight-tracker-mey7.onrender.com/',
+    origin: 'https://weight-tracker-mey7.onrender.com',
     credentials: true
 }));
 
