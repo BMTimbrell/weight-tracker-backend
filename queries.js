@@ -69,6 +69,55 @@ const createUser = async (req, res) => {
     }
 };
 
+const updateUser = async (request, response) => {
+    const id = parseInt(request.params.id);
+    const { email, password, name } = request.body;
+
+    //Update email
+    if (email) { 
+        try {
+            await pool.query(
+                'UPDATE users SET email = $1 WHERE id = $2', [email, id]
+            );
+
+        } catch (error) {
+            if (error) return response.status(500).error;
+        }
+    }
+
+    //Update password
+    if (password) {
+        try {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+    
+            await pool.query(
+                'UPDATE users SET password = $1 WHERE id = $2', 
+                [hashedPassword, id]
+            );
+    
+        } catch (error) {
+            console.log(error);
+           return response.status(500).json({message: error.message}); 
+        } 
+    }
+
+    if (name) {
+        try {
+            await pool.query(
+                'UPDATE users SET name = $1 WHERE id = $2', 
+                [name, id]
+            );
+    
+        } catch (error) {
+            console.log(error);
+           return response.status(500).json({message: error.message}); 
+        } 
+    }
+
+    return response.status(200).json({message: 'Update Complete!'});
+};
+
 //Logging in
 passport.use(new LocalStrategy({ usernameField: 'email' }, function verify(email, password, done) {
     pool.query('SELECT * FROM users WHERE email = $1', [email], async (error, user) => {
@@ -139,7 +188,7 @@ const deleteWeight = async (req, res) => {
     const id = parseInt(req.params.dataId);
 
     try {
-        const updatedWeight = await pool.query('DELETE FROM weights WHERE id = $1', [id]);
+        await pool.query('DELETE FROM weights WHERE id = $1', [id]);
         return res.status(200).json({message: 'Deletion successful'});
     } catch (error) {
         return res.status(500).json({error});
@@ -151,6 +200,7 @@ module.exports = {
     getUserById,
     checkEmailExists,
     createUser,
+    updateUser,
     getWeight,
     addWeight,
     updateWeight,

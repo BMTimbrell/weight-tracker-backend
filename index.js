@@ -7,7 +7,7 @@ const passport = require('passport');
 const session = require('express-session');
 const db = require('./queries');
 
-//app.enable('trust proxy');
+app.enable('trust proxy');
 
 app.use(
     session({
@@ -47,6 +47,7 @@ app.listen(port, () => {
 });
 
 app.get('/users/:id', db.checkUserAuthorised, db.getUserById);
+app.put('/users/:id', db.checkUserAuthorised, db.checkEmailExists, db.updateUser);
 app.post('/register', db.checkEmailExists, db.createUser);
 app.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureMessage: true}), 
     (req, res) => {
