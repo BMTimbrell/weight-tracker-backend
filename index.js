@@ -23,7 +23,7 @@ app.use(
 );
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://weight-tracker-mey7.onrender.com',
     credentials: true
 }));
 
