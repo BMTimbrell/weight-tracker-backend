@@ -14,8 +14,8 @@ app.use(
         secret: 'asdawac21',
         cookie: { 
             maxAge: 300000000,
-            sameSite: 'none',
-            secure: true
+            sameSite: true,
+            secure: false
         },
         resave: true,
         saveUninitialized: true
@@ -23,7 +23,7 @@ app.use(
 );
 
 app.use(cors({
-    origin: 'https://weight-tracker-mey7.onrender.com',
+    origin: 'http://localhost:3000',
     credentials: true
 }));
 
