@@ -14,8 +14,8 @@ app.use(
         secret: 'asdawac21',
         cookie: { 
             maxAge: 300000000,
-            sameSite: true,
-            secure: false
+            sameSite: 'none',
+            secure: true
         },
         resave: true,
         saveUninitialized: true
