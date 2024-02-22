@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const Pool = require('pg').Pool;
 const pool = new Pool({
-    connectionString: process.env.CONNECITON_STRING
+    connectionString: process.env.CONNECTION_STRING
 });
 
 const checkUserAuthorised = (req, res, next) => {
